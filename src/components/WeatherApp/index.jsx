@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import WeatherForm from './WeatherForm';
 import WeatherDisplay from './WeatherDisplay';
 
-
 const WeatherApp = () => {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
@@ -10,7 +9,6 @@ const WeatherApp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [skyAnimation, setSkyAnimation] = useState('day-clear');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,27 +17,6 @@ const WeatherApp = () => {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (!weather) return;
-
-    const hour = currentTime.getHours();
-    const isDayTime = hour > 6 && hour < 18;
-    const weatherType = weather.weather[0].main.toLowerCase();
-
-    let animationClass = 'day-clear';
-    if (!isDayTime) {
-      if (weatherType.includes('rain')) animationClass = 'night-rain';
-      else if (weatherType.includes('cloud')) animationClass = 'night-clouds';
-      else animationClass = 'night-clear';
-    } else {
-      if (weatherType.includes('rain')) animationClass = 'day-rain';
-      else if (weatherType.includes('cloud')) animationClass = 'day-clouds';
-      else if (weatherType.includes('snow')) animationClass = 'day-snow';
-      else animationClass = 'day-clear';
-    }
-    setSkyAnimation(animationClass);
-  }, [weather, currentTime]);
-
   const API_KEY = 'fcc8de7015bbb202209bbf0261babf4c';
 
   const fetchWeatherData = async () => {
@@ -47,7 +24,7 @@ const WeatherApp = () => {
       setError('Please enter a city name');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
     setWeather(null);
@@ -57,7 +34,7 @@ const WeatherApp = () => {
       let weatherRes = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&appid=${API_KEY}&units=metric`
       );
-      
+
       if (weatherRes.status === 404) {
         weatherRes = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${city.trim()},IN&appid=${API_KEY}&units=metric`
@@ -93,16 +70,18 @@ const WeatherApp = () => {
   };
 
   return (
-    <div className={`weather-app ${skyAnimation}`}>
+    <div className="weather-app">
       <div className="weather-container bg-cyan-400 p-3 sm:p-5 w-[90vw] sm:w-[50vw] max-h-full">
         <h1 className="text-2xl md:text-4xl font-bold text-center mb-8">🌦️ Weather App</h1>
         
-        <div className='mt-3'><WeatherForm 
-          city={city}
-          setCity={setCity}
-          loading={loading}
-          fetchWeatherData={fetchWeatherData}
-        /> </div>
+        <div className='mt-3'>
+          <WeatherForm 
+            city={city}
+            setCity={setCity}
+            loading={loading}
+            fetchWeatherData={fetchWeatherData}
+          />
+        </div>
         
         <WeatherDisplay 
           loading={loading}
